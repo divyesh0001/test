@@ -1,0 +1,454 @@
+1.Calculate the average, variance and standard deviation in Python using NumPy
+import numpy as np
+import pandas as pd
+df = pd.DataFrame({'numbers':[2,4,5,56,6,7,7,7,10,34,4,34,3,2,1,1,1,34,5,5,6,6,3]})
+average = np.mean(df['numbers'])
+variance = np.var(df['numbers'])
+std_deviation = np.std(df['numbers'])
+print("Average:",average,"\n" "Variance:",variance, "\n"  "std_deviation:", std_deviation)
+
+2.How to calculate probability in a normal distribution given mean and standard deviation in Python?
+from scipy.stats import norm
+import numpy as np
+data_start = -5
+data_end = 5
+data_points = 11
+data = np.linspace(data_start, data_end, data_points) 
+mean = np.mean(data)
+std = np.std(data)
+probability_pdf = norm.pdf(3, loc=mean, scale=std)
+print(probability_pdf)
+
+
+3.How to Make a Time Series Plot with Rolling Average in Python?
+
+# import the libraries
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# import the dataset
+data = pd.read_csv( 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-total-female-births.csv')
+
+#view the dataset
+display( data.head())
+
+# computing a 7 day rolling average
+data[ '7day_rolling_avg' ] = data.Births.rolling( 7).mean()
+
+# viewing the dataset
+display(data.head(10))
+
+# set figure size
+plt.figure( figsize = ( 12, 5))
+
+# plot a simple time series plot
+# using seaborn.lineplot()
+sns.lineplot( x = 'Date',
+			y = 'Births',
+			data = data,
+			label = 'DailyBirths')
+
+# plot using rolling average
+sns.lineplot( x = 'Date',
+			y = '7day_rolling_avg',
+			data = data,
+			label = 'Rollingavg')
+
+plt.xlabel('Months of the year 1959')
+
+# setting customized ticklabels for x axis
+pos = [ '1959-01-01', '1959-02-01', '1959-03-01', '1959-04-01',
+	'1959-05-01', '1959-06-01', '1959-07-01', '1959-08-01',
+	'1959-09-01', '1959-10-01', '1959-11-01', '1959-12-01']
+
+lab = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
+	'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+
+plt.xticks( pos, lab)
+
+plt.ylabel('Female Births')
+
+
+4.Any 4 plotting methods using pandas and matplotlib.
+import pandas as pd
+data = pd.read_csv("C:/Users/lunat/OneDrive/Desktop/organizations-100.csv")
+
+from matplotlib import pyplot as plt
+x = data['Founded']
+y = data['Number of employees']
+plt.plot(x,y)
+plt.show()
+
+#bargraph
+plt.bar(x,y)
+plt.show()
+
+#histogram
+plt.hist(y,color='blue')
+plt.show()
+
+#boxplot
+plt.boxplot(y)
+plt.show()
+
+#violenplot
+plt.violinplot(x)
+plt.show()
+
+#piechart
+import matplotlib.pyplot as plt
+activities = ['eat','sleep','work','play']
+slices = [4,7,8,6]
+colors = ['r','y','b','g']
+plt.pie(slices,labels = activities, colors=colors,startangle=90,shadow = True , radius=1.2)
+plt.legend() 
+plt.show()
+
+#scatterplot
+plt.scatter(x,y)
+plt.show()
+
+
+
+5.Perform linear regression on the data set mydata.csv.
+
+#@title Import relevant modules
+import pandas as pd
+import tensorflow as tf
+from matplotlib import pyplot as plt
+
+# The following lines adjust the granularity of reporting. 
+pd.options.display.max_rows = 10
+pd.options.display.float_format = "{:.1f}".format
+
+# Import the dataset.
+training_df = pd.read_csv(filepath_or_buffer="https://download.mlcc.google.com/mledu-datasets/california_housing_train.csv")
+
+# Scale the label.
+training_df["median_house_value"] /= 1000.0
+
+# Print the first rows of the pandas DataFrame.
+training_df.head()
+
+# Get statistics on the dataset.
+training_df.describe()
+
+#@title Define the functions that build and train a model
+def build_model(my_learning_rate):
+  """Create and compile a simple linear regression model."""
+  # Most simple tf.keras models are sequential.
+  model = tf.keras.models.Sequential()
+
+  # Describe the topography of the model.
+  # The topography of a simple linear regression model
+  # is a single node in a single layer.
+  model.add(tf.keras.layers.Dense(units=1, 
+                                  input_shape=(1,)))
+
+  # Compile the model topography into code that TensorFlow can efficiently
+  # execute. Configure training to minimize the model's mean squared error. 
+  model.compile(optimizer=tf.keras.optimizers.experimental.RMSprop(learning_rate=my_learning_rate),
+                loss="mean_squared_error",
+                metrics=[tf.keras.metrics.RootMeanSquaredError()])
+
+  return model        
+
+
+def train_model(model, df, feature, label, epochs, batch_size):
+  """Train the model by feeding it data."""
+
+  # Feed the model the feature and the label.
+  # The model will train for the specified number of epochs. 
+  history = model.fit(x=df[feature],
+                      y=df[label],
+                      batch_size=batch_size,
+                      epochs=epochs)
+
+  # Gather the trained model's weight and bias.
+  trained_weight = model.get_weights()[0]
+  trained_bias = model.get_weights()[1]
+
+  # The list of epochs is stored separately from the rest of history.
+  epochs = history.epoch
+  
+  # Isolate the error for each epoch.
+  hist = pd.DataFrame(history.history)
+
+  # To track the progression of training, we're going to take a snapshot
+  # of the model's root mean squared error at each epoch. 
+  rmse = hist["root_mean_squared_error"]
+
+  return trained_weight, trained_bias, epochs, rmse
+
+print("Defined the build_model and train_model functions.")
+
+
+def plot_the_model(trained_weight, trained_bias, feature, label):
+  """Plot the trained model against 200 random training examples."""
+
+  # Label the axes.
+  plt.xlabel(feature)
+  plt.ylabel(label)
+
+  # Create a scatter plot from 200 random points of the dataset.
+  random_examples = training_df.sample(n=200)
+  plt.scatter(random_examples[feature], random_examples[label])
+
+  # Create a red line representing the model. The red line starts
+  # at coordinates (x0, y0) and ends at coordinates (x1, y1).
+  x0 = 0
+  y0 = trained_bias
+  x1 = random_examples[feature].max()
+  y1 = trained_bias + (trained_weight * x1)
+  plt.plot([x0, x1], [y0, y1], c='r')
+
+  # Render the scatter plot and the red line.
+  plt.show()
+
+# The following variables are the hyperparameters.
+learning_rate = 0.01
+epochs = 30
+batch_size = 30
+
+# Specify the feature and the label.
+my_feature = "total_rooms"  # the total number of rooms on a specific city block.
+my_label="median_house_value" # the median value of a house on a specific city block.
+# That is, you're going to create a model that predicts house value based 
+# solely on total_rooms.  
+
+# Discard any pre-existing version of the model.
+my_model = None
+
+# Invoke the functions.
+my_model = build_model(learning_rate)
+weight, bias, epochs, rmse = train_model(my_model, training_df, 
+                                         my_feature, my_label,
+                                         epochs, batch_size)
+
+print("\nThe learned weight for your model is %.4f" % weight)
+print("The learned bias for your model is %.4f\n" % bias )
+
+plot_the_model(weight, bias, my_feature, my_label)
+
+
+
+6.Perform multiple linear regression on any  dataset and obtain the values of coefficients and intercept
+
+import numpy as np
+from numpy import linalg
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+
+class TrainModelException(Exception):
+    def __init__(self):
+        self.message = 'Fit model with data first'
+        super().__init__(self.message)
+
+
+class CustomLinearRegression:
+
+    def __init__(self, *, fit_intercept=False):
+        self.fit_intercept = fit_intercept
+        self.coefficients = np.array([])
+        self.intercept = 0
+
+    def independent_to_array(self, independent: pd.DataFrame):
+        X = independent.copy(deep=True)
+        if self.fit_intercept:
+            ones = [1 for _ in range(X.shape[0])]
+            X.insert(0, "ones", ones)
+        return X.to_numpy()
+
+    def dependent_to_array(self, dependent: pd.DataFrame):
+        return dependent.to_numpy()
+
+    def fit(self, independent: pd.DataFrame, dependent: pd.DataFrame) -> None:
+        X, y = self.independent_to_array(independent), self.dependent_to_array(dependent)
+        X_transposed = X.transpose()
+        first_prod = np.matmul(X_transposed, X)
+        inv = linalg.inv(first_prod)
+        second_prod = np.matmul(inv, X_transposed)
+        res_array = np.matmul(second_prod, y)
+        self.coefficients = np.array(res_array).transpose()[0]
+        if self.fit_intercept:
+            self.intercept = self.coefficients[0]
+        return
+
+    def predict(self, independent: pd.DataFrame) -> np.array:
+        if not self.coefficients.size:
+            raise TrainModelException
+        X = self.independent_to_array(independent)
+        return (X @ self.coefficients.transpose())[np.newaxis].transpose()
+
+    def r2_score(self, dependent: pd.DataFrame, yhat: np.array) -> float:
+        y = self.dependent_to_array(dependent)
+        return 1 - np.sum((y - yhat) ** 2) / np.sum((y - np.mean(y)) ** 2)
+
+    def rmse(self, dependent, yhat) -> float:
+        y = self.dependent_to_array(dependent)
+        return np.sqrt(np.sum((y - yhat) ** 2) / yhat.shape[0])
+
+
+def main() -> None:
+    cols = pd.read_csv('https://raw.githubusercontent.com/kraslav4ik/Multiple-Linear-Regression-Implementation/main/Linear%20Regression%20from%20Scratch/data.csv', nrows=1).columns.tolist()
+    table = pd.read_csv('https://raw.githubusercontent.com/kraslav4ik/Multiple-Linear-Regression-Implementation/main/Linear%20Regression%20from%20Scratch/data.csv', skiprows=1, names=cols[:-1] + ['y'])
+    dep = pd.DataFrame(table['y'])
+    indep = table.drop('y', axis=1)
+    print('Fit model with intercept? - "y" or "n"')
+    intercept = input()
+    if intercept not in {'y', 'n'}:
+        raise ValueError(intercept)
+    fit_intercept = True if intercept == 'y' else False
+
+    sci_lg = LinearRegression(fit_intercept=fit_intercept)
+    sci_lg.fit(indep, dep)
+    sci_predictions = sci_lg.predict(indep)
+    sci_r2_score = r2_score(dep, sci_predictions)
+    sci_rmse = mean_squared_error(dep, sci_predictions) ** 0.5
+
+    custom_lg = CustomLinearRegression(fit_intercept=fit_intercept)
+    custom_lg.fit(indep, dep)
+    yhat = custom_lg.predict(indep)
+    custom_r2_score = custom_lg.r2_score(dep, yhat)
+    custom_rmse = custom_lg.rmse(dep, yhat)
+    print({'intercept': abs((sci_lg.intercept_[0] if sci_lg.intercept_ else 0) - custom_lg.intercept),
+           'Coefficient': abs(sci_lg.coef_[0] -
+                              (custom_lg.coefficients[1:] if custom_lg.intercept else custom_lg.coefficients)),
+           'R2': abs(sci_r2_score - custom_r2_score), 'RMSE': abs(sci_rmse - custom_rmse)})
+
+    sci_pred = sci_predictions.transpose()[0]
+    custom_pred = yhat.transpose()[0]
+    fig, ax = plt.subplots()
+    fig.suptitle(f'Comparison of predictions by SkLearn Linear regression and My linear regression model\n'
+                 f'Intercept = {fit_intercept}')
+    fig.set_size_inches(10, 6)
+    p1 = max(max(sci_pred), max(dep['y']))
+    p2 = min(min(sci_pred), min(dep['y']))
+    ax.scatter(dep, sci_pred, c='g', alpha=0.5, s=35, label='SkLearn linear regression predictions')
+    ax.plot([p1, p2], [p1, p2], 'y')
+    ax.scatter(dep, custom_pred, c='crimson', alpha=0.8, s=5, label='My linear regression predictions')
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    ax.set_ylabel('Predictions')
+    ax.set_xlabel('True Values')
+    ax.set_aspect('equal', adjustable='box')
+
+
+    fig.tight_layout()
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels)
+
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()
+
+7.Perform ARIMA model and predict the future values on temp.csv
+
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
+%matplotlib inline
+#Step 1 - First we will clean the data
+df = pd.read_csv('https://raw.githubusercontent.com/akashprem12/Milk-Production-forecasting-using-Time-Series-Analysis-ARIMA-/master/monthly-milk-production-pounds-p.csv')
+df.head()
+df.columns  = ['Month','Milk in pounds for Cow']
+df.tail()
+df.drop(168,axis=0,inplace=True)
+df.tail()
+df['Month'] = pd.to_datetime(df['Month'])
+df.head()
+df.set_index('Month',inplace=True)
+df.head()
+df.index
+df.describe().transpose()
+df.plot()
+time_series = df['Milk in pounds for Cow']
+type(time_series)
+
+time_series.rolling(12).mean().plot(label='12 Month Rolling Mean')
+time_series.rolling(12).std().plot(label='12 Month Rolling Std')
+time_series.plot()
+plt.legend()
+from statsmodels.tsa.seasonal import seasonal_decompose
+decomp = seasonal_decompose(time_series)
+fig = decomp.plot()
+fig.set_size_inches(15,12)
+def adf_check(time_series):
+    
+    result = adfuller(time_series)
+    print("Augmented Dicky-Fuller Test")
+    labels = ['ADF Test Statistics','p-value','# of lags','Num of Observations']
+    
+    for value,label in zip(result,labels):
+        print(label+ " : "+str(value))
+        
+    if result[1] <= 0.05:
+        print("Strong evidence against null hypothesis")
+        print("reject null hypothesis")
+        print("Data has no unit root and is stationary")
+    else:
+        print("Weak evidence against null hypothesis")
+        print("Fail to reject null hypothesis")
+        print("Data has a unit root and is non-stationary")
+adf_check(df['Milk in pounds for Cow'])
+df['First Difference'] = df['Milk in pounds for Cow'] - df['Milk in pounds for Cow'].shift(1)
+df['First Difference'].plot()
+adf_check(df['First Difference'].dropna())
+df['Seasonal Difference'] = df['Milk in pounds for Cow'] - df['Milk in pounds for Cow'].shift(12)
+df['Seasonal Difference'].plot()
+adf_check(df['Seasonal Difference'].dropna())
+df['Seasonal First Difference'] = df['First Difference'] - df['First Difference'].shift(12)
+df['Seasonal First Difference'].plot()
+adf_check(df['Seasonal First Difference'].dropna())
+from statsmodels.graphics.tsaplots import plot_acf,plot_pacf
+fig_first = plot_acf(df['First Difference'].dropna())
+fig_seasonal_first = plot_acf(df['Seasonal First Difference'].dropna())
+from pandas.plotting import autocorrelation_plot
+autocorrelation_plot(df['Seasonal First Difference'].dropna())
+result = plot_pacf(df['Seasonal First Difference'].dropna())
+plot_acf(df['Seasonal First Difference'].dropna());
+plot_pacf(df['Seasonal First Difference'].dropna());
+from statsmodels.tsa.arima_model import ARIMA
+model = sm.tsa.statespace.SARIMAX(df['Milk in pounds for Cow'],order=(0,1,0),seasonal_order=(1,1,1,12))
+results = model.fit()
+print(results.summary())
+results.resid.plot()
+results.resid.plot(kind='kde')
+df['forecast'] = results.predict(start=150, end=168)
+df[['Milk in pounds for Cow','forecast']].plot(figsize=(12,8))
+df.tail()
+from pandas.tseries.offsets import DateOffset
+future_dates = [df.index[-1] + DateOffset(months=x) for x in range(1,24)]
+future_dates
+future_df = pd.DataFrame(index=future_dates,columns=df.columns)
+future_df
+final_df = pd.concat([df,future_df])
+final_df.tail()
+final_df['forecast'] = results.predict(starts=168,end=192)
+final_df.tail()
+final_df[['Milk in pounds for Cow','forecast']].plot(figsize=(12,8))
+
+
+8.Different plotting using ggplot in r programming
+library(datasets)
+data(mtcars)
+head(mtcars)
+
+boxplot(mtcars$mpg,col="red")
+
+hist(mtcars$mpg, col = "red")
+hist(mtcars$mpg, col = "red" , breaks = 25)
+hist(mtcars$mpg, col = "red" , breaks = 50)
+
+barplot(table(mtcars$carb), col="red")
+
+with(mtcars,plot(mpg,qsec))
