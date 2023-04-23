@@ -72,7 +72,7 @@ plt.ylabel('Female Births')
 
 4.Any 4 plotting methods using pandas and matplotlib.
 import pandas as pd
-data = pd.read_csv("C:/Users/lunat/OneDrive/Desktop/organizations-100.csv")
+data = pd.read_csv("https://media.githubusercontent.com/media/datablist/sample-csv-files/main/files/organizations/organizations-100.csv")
 
 from matplotlib import pyplot as plt
 x = data['Founded']
