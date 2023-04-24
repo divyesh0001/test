@@ -1,0 +1,235 @@
+# Linear regression
+
+import matplotlib.pyplot as plt
+from scipy import stats
+
+x = [5,7,8,7,2,17,2,9,4,11,12,9,6]
+y = [99,86,87,88,111,86,103,87,94,78,77,85,86]
+
+slope, intercept, r, p, std_err = stats.linregress(x, y)
+
+def myfunc(x):
+  return slope * x + intercept
+
+mymodel = list(map(myfunc, x))
+
+plt.scatter(x, y)
+plt.plot(x, mymodel)
+plt.show()
+
+#logisticregression
+import numpy as np
+import pandas as pd 
+x = [[1],[2],[3], [4] , [5], [6], [7], [8]]
+y = [9 , 8 , 7 , 6 , 5 , 4 , -1 , -2] 
+from sklearn.model_selection import train_test_split
+x_train, x_test,y_train, y_test = train_test_split(x, y, test_size=0.3, random_state = 0)
+from sklearn.linear_model import LogisticRegression 
+clas = LogisticRegression()
+clas.fit(x_train,y_train ) 
+y_pred = clas.predict (x_test) 
+from sklearn . metrics import confusion_matrix 
+cm = confusion_matrix(y_test,y_pred) 
+print (cm)
+import matplotlib.pyplot as plt 
+plt.scatter (x, y) 
+W= clas.coef_[0]
+X = [1,2,3,4,5,6, 7, 8, 9, 10]
+Y = [clas.intercept_[0]+W[0]*xi for xi in X] 
+plt.plot (X, Y, color="red")
+plt.show()
+
+
+# Q SVM
+
+x = [[1],[2], [3], [4], [5], [6], [7] , [8], [9], [10], [11]]
+y = [9,8, 7, 6, 5, 4, 3, 2, 1, 0, -1]
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test = train_test_split(x, y, random_state=0, test_size=0.3)
+from sklearn. svm import SVC 
+sv = SVC(kernel="linear")
+sv.fit (x_train,y_train) 
+y_pred = sv.predict (x_test) 
+from sklearn.metrics import confusion_matrix 
+cm=confusion_matrix(y_test, y_pred) 
+print (cm)
+c = sv.coef_[0]
+sv.intercept_[0]
+x1 = [x for x in range(1, 12) ]
+y1 = [sv.intercept_[0] + c[0]*i for i in range(1, 12) ] 
+import matplotlib.pyplot as plt 
+plt.scatter(x, y)
+plt.plot(x1, y1, color="red" )
+plt.show()
+
+def hebbian_learning(samples):
+     print(f'{"INPUT":^8} {"TARGET":^16}{"WEIGHT CHANGES":^15}{"WEIGHTS":^25}')
+     w1, w2, b = 0, 0, 0
+     print(' ' * 45, f'({w1:2}, {w2:2}, {b:2})')
+     for x1, x2, y in samples:
+         w1 = w1 + x1 * y
+         w2 = w2 + x2 * y
+         b = b + y
+         print(f'({x1:2}, {x2:2}) {y:2} ({x1:2}, {x2:2}, {y:2}) ({w1:2}, {w2:2}, {b:2})')
+
+AND_samples = {
+    'binary_input_binary_output': [
+        [1, 1, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 0]
+    ],
+    'binary_input_bipolar_output': [
+        [1, 1, 1],
+        [1, 0, -1],
+        [0, 1, -1],
+        [0, 0, -1]
+    ],
+    'bipolar_input_bipolar_output': [
+        [ 1, 1, 1],
+        [ 1, -1, -1],
+        [-1, 1, -1],
+        [-1, -1, -1]
+    ]
+}
+
+print('AND with Binary Input and Binary Output')
+hebbian_learning(AND_samples['binary_input_binary_output'])
+
+
+
+# Q MP Model 
+
+from sklearn. linear_model import Perceptron
+X = [[0,0 ], [0, 1], [1, 0], [1, 1]] 
+y = [0, 0, 1, 0]
+per = Perceptron() 
+per.fit (X, y)
+w = per.coef_
+y1 = X[0][0]*w[0][0]+X[0][1]*w[0][1] 
+y2 = X[1][0]*w[0][0]+X[1][1]*w[0][1] 
+y3 = X[2][0]*w[0][0]+X[2][1]*w[0][1] 
+y4 = X[3][0]*w[0][0]+X[3][1]*w[0][1]
+def act(x1, x2):
+    yin = x1*w[0][0]+x2*w[0][1]
+    if yin >=2:
+        return 1
+    else:
+        return 0
+print("give x1 and x2 values for prediction: ")
+x1 = 0
+x2 = 1
+a = act (x1, x2)
+print ("Activation output: ",a)
+
+
+
+# Q percoptron learning
+
+from sklearn.linear_model import Perceptron 
+import numpy as np
+X_train = np. array([[0, 0], [0, 1], [1, 0], [1, 1]]) 
+y_train = np.array( [0, 1, 1, 1])
+clf = Perceptron()
+clf.fit (X_train, y_train)
+X_test = np.array([ [0, 0], [0, 1]]) 
+y_pred = clf.predict (X_test)
+print(y_pred)
+ 
+
+
+
+# error back propagation algorithm
+
+
+import numpy as np
+
+# define the sigmoid function
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# define the derivative of the sigmoid function
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# define the neural network architecture
+input_size = 2
+hidden_size = 3
+output_size = 1
+
+# initialize the weights
+w1 = np.random.randn(input_size, hidden_size)
+w2 = np.random.randn(hidden_size, output_size)
+
+# define the input and output data
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([[0], [1], [1], [0]])
+
+# set the learning rate and number of iterations
+learning_rate = 0.1
+num_iterations = 10000
+
+# train the neural network using backpropagation
+for i in range(num_iterations):
+    # forward pass
+    z1 = np.dot(X, w1)
+    a1 = sigmoid(z1)
+    z2 = np.dot(a1, w2)
+    y_pred = sigmoid(z2)
+    
+    # backward pass
+    error = y - y_pred
+    delta2 = error * sigmoid_derivative(y_pred)
+    delta1 = np.dot(delta2, w2.T) * sigmoid_derivative(a1)
+    
+    # update the weights
+    w2 += learning_rate * np.dot(a1.T, delta2)
+    w1 += learning_rate * np.dot(X.T, delta1)
+
+# print the final predictions
+print("Final predictions:")
+print(y_pred)
+
+
+
+# principal component analysis in python
+
+from sklearn.decomposition import PCA
+import numpy as np
+import matplotlib.pyplot as plt
+
+# create sample data
+X_train = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9],[7, 8,3]])
+y_train = np.array([0, 1, 1])
+
+X_test = np.array([[2, 3, 4], [5, 6, 7]])
+y_test = np.array([0, 1])
+
+# create a PCA object with 2 principal components
+pca = PCA(n_components=2)
+
+# fit and transform the training data
+X_train_pca = pca.fit_transform(X_train)
+
+# transform the testing data using the same PCA object
+X_test_pca = pca.transform(X_test)
+
+# plot the transformed training data
+plt.subplot(1, 2, 1)
+plt.scatter(X_train_pca[:, 0], X_train_pca[:, 1], c=y_train)
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.title('Training Data')
+
+# plot the transformed testing data
+plt.subplot(1, 2, 2)
+plt.scatter(X_test_pca[:, 0], X_test_pca[:, 1], c=y_test)
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.title('Testing Data')
+
+plt.tight_layout()
+plt.show()
+
+
+
